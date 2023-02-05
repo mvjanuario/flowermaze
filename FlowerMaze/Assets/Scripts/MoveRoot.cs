@@ -173,14 +173,14 @@ public class MoveRoot : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.CompareTag("danger"))
+        if (collision.gameObject.CompareTag("danger"))
         {
             Debug.Log("perigo");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
-        if (collision.CompareTag("final"))
+        if (collision.gameObject.CompareTag("final"))
         {
             Debug.Log("parabéns");
         }
