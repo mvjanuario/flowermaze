@@ -30,6 +30,7 @@ public class MoveRoot : MonoBehaviour
     private Vector3 m_lastDirection;
     private Vector3 rootDirection1, rootDirection2;
     public bool changeDirection = false;
+    public AudioSource music, gameOver, rootSound;
 
     // Start is called before the first frame update
     void Start()
@@ -104,6 +105,7 @@ public class MoveRoot : MonoBehaviour
 
     private void ChangeDirection()
     {
+        rootSound.Play();
         if (changeDirection)
         {
             sprite.transform.localScale = rootDirection1;
@@ -168,7 +170,6 @@ public class MoveRoot : MonoBehaviour
         }
         else
         {
-            Debug.Log("Dale");
             Instantiate(m_moduleHorizontal, transform.position, m_moduleHorizontal.transform.rotation, roots.transform);
         }
     }
@@ -177,12 +178,24 @@ public class MoveRoot : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("danger"))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            music.Stop();
+            StartCoroutine(playGameover());
         }
         if (collision.gameObject.CompareTag("final"))
         {
-            Debug.Log("Teste");
             SceneManager.LoadScene("End Game");
         }
+    }
+
+    IEnumerator playGameover()
+    {
+        gameOver.Play();
+
+        while (gameOver.isPlaying)
+        {
+            yield return null;
+        }
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
