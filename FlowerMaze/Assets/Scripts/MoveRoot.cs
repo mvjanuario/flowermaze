@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class MoveRoot : MonoBehaviour
 {
@@ -22,7 +24,12 @@ public class MoveRoot : MonoBehaviour
     [SerializeField] private GameObject m_moduleVertical;
     [SerializeField] private GameObject m_moduleHorizontal;
 
+    public GameObject roots;
+    public GameObject sprite;
+
     private Vector3 m_lastDirection;
+    private Vector3 rootDirection1, rootDirection2;
+    public bool changeDirection = false;
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +39,8 @@ public class MoveRoot : MonoBehaviour
         down = true;
         left = false;
         right = false;
+        rootDirection1 = new Vector3(1, 1, 1);
+        rootDirection2 = new Vector3(-1, 1, 1);
     }
 
     // Update is called once per frame
@@ -51,6 +60,7 @@ public class MoveRoot : MonoBehaviour
                     m_lastDirection = Vector3.up;
                     movePoint.position += new Vector3(0, 1, 0);
                     rootSprite.eulerAngles = new Vector3(0, 0, 180);
+                    ChangeDirection();
                 }
             }
             if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) && m_lastDirection != Vector3.up)
@@ -62,6 +72,7 @@ public class MoveRoot : MonoBehaviour
                     m_lastDirection = Vector3.down;
                     movePoint.position += new Vector3(0, -1, 0);
                     rootSprite.eulerAngles = new Vector3(0, 0, 0);
+                    ChangeDirection();
                 }
             }
             if ((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && m_lastDirection != Vector3.right)
@@ -73,6 +84,7 @@ public class MoveRoot : MonoBehaviour
                     m_lastDirection = Vector3.left;
                     movePoint.position += new Vector3(-1, 0, 0);
                     rootSprite.eulerAngles = new Vector3(0, 0, -90);
+                    ChangeDirection();
                 }
             }
             if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && m_lastDirection != Vector3.left)
@@ -84,36 +96,51 @@ public class MoveRoot : MonoBehaviour
                     m_lastDirection = Vector3.right;
                     movePoint.position += new Vector3(1, 0, 0);
                     rootSprite.eulerAngles = new Vector3(0, 0, 90);
+                    ChangeDirection();
                 }
             }
         }
+    }
+
+    private void ChangeDirection()
+    {
+        if (changeDirection)
+        {
+            sprite.transform.localScale = rootDirection1;
+        }
+        else
+        {
+            sprite.transform.localScale = rootDirection2;
+        }
+
+        changeDirection = !changeDirection;
     }
 
     public void createModuleVertical()
     {
         if (up && left)
         {
-            Instantiate(m_LModuleRightUp, transform.position, transform.rotation);
+            Instantiate(m_LModuleRightUp, transform.position, transform.rotation, roots.transform);
             left = false;
         }
         else if (up && right)
         {
-            Instantiate(m_LModuleLeftUp, transform.position, transform.rotation);
+            Instantiate(m_LModuleLeftUp, transform.position, transform.rotation, roots.transform);
             right = false;
         }
         else if (down && left)
         {
-            Instantiate(m_LModuleRightDown, transform.position, transform.rotation);
+            Instantiate(m_LModuleRightDown, transform.position, transform.rotation, roots.transform);
             left = false;
         }
         else if (down && right)
         {
-            Instantiate(m_LModuleLeftDown, transform.position, transform.rotation);
+            Instantiate(m_LModuleLeftDown, transform.position, transform.rotation, roots.transform);
             right = false;
         }
         else
         {
-            Instantiate(m_moduleVertical, transform.position, transform.rotation);
+            Instantiate(m_moduleVertical, transform.position, transform.rotation, roots.transform);
         }
     }
 
@@ -121,28 +148,28 @@ public class MoveRoot : MonoBehaviour
     {
         if (up && left)
         {
-            Instantiate(m_LModuleLeftDown, transform.position, transform.rotation);
+            Instantiate(m_LModuleLeftDown, transform.position, transform.rotation, roots.transform);
             up = false;
         }
         else if (up && right)
         {
-            Instantiate(m_LModuleRightDown, transform.position, transform.rotation);
+            Instantiate(m_LModuleRightDown, transform.position, transform.rotation, roots.transform);
             up = false;
         }
         else if (down && left)
         {
-            Instantiate(m_LModuleLeftUp, transform.position, transform.rotation);
+            Instantiate(m_LModuleLeftUp, transform.position, transform.rotation, roots.transform);
             down = false;
         }
         else if (down && right)
         {
-            Instantiate(m_LModuleRightUp, transform.position, transform.rotation);
+            Instantiate(m_LModuleRightUp, transform.position, transform.rotation, roots.transform);
             down = false;
         }
         else
         {
             Debug.Log("Dale");
-            Instantiate(m_moduleHorizontal, transform.position, m_moduleHorizontal.transform.rotation);
+            Instantiate(m_moduleHorizontal, transform.position, m_moduleHorizontal.transform.rotation, roots.transform);
         }
     }
 
