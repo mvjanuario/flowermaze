@@ -177,12 +177,12 @@ public class MoveRoot : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("danger"))
         {
-            Debug.Log("perigo");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
         if (collision.gameObject.CompareTag("final"))
         {
-            Debug.Log("parabéns");
+            Debug.Log("Teste");
+            SceneManager.LoadScene("End Game");
         }
     }
 }
