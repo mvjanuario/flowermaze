@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 1675297836850871779}
   m_Layer: 0
   m_Name: Root
-  m_TagString: Untagged
+  m_TagString: modulo
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -170,12 +170,22 @@ MonoBehaviour:
   whatStopsMoviment:
     serializedVersion: 2
     m_Bits: 64
-  lBD: {fileID: 21300000, guid: 09f2fb30e50fbc1449f26f2399e83a17, type: 2}
-  LBE: {fileID: 21300000, guid: 5487a08fe5ab3264baa8311e6f7e4d19, type: 2}
-  lCD: {fileID: 21300000, guid: 3f9624b0a1688884d9c4625985990223, type: 2}
-  lCE: {fileID: 21300000, guid: 34bc7d7fc176fa844b8c89ce6335d6cc, type: 2}
+  up: 0
+  down: 0
+  left: 0
+  right: 0
+  m_LModuleLeftUp: {fileID: 0}
+  m_LModuleLeftDown: {fileID: 0}
+  m_LModuleRightUp: {fileID: 0}
+  m_LModuleRightDown: {fileID: 0}
   m_moduleVertical: {fileID: 2596881915309884099, guid: d092ab80ec6866445bbbaa534dffbbae, type: 3}
   m_moduleHorizontal: {fileID: 453811656420489512, guid: 7e4293f2d3035f343916a7cf32d21d47, type: 3}
+  roots: {fileID: 0}
+  sprite: {fileID: 0}
+  changeDirection: 0
+  music: {fileID: 0}
+  gameOver: {fileID: 0}
+  rootSound: {fileID: 0}
 --- !u!50 &1675297836850871778
 Rigidbody2D:
   serializedVersion: 4

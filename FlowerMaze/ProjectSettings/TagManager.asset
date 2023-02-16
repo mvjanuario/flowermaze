@@ -6,6 +6,7 @@ TagManager:
   tags:
   - danger
   - final
+  - modulo
   layers:
   - Default
   - TransparentFX

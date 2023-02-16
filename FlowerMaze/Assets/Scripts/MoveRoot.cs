@@ -14,7 +14,6 @@ public class MoveRoot : MonoBehaviour
     public LayerMask whatStopsMoviment;
 
     public bool up, down, left, right;
-    private bool mudou = false;
 
     [SerializeField] private GameObject m_LModuleLeftUp;
     [SerializeField] private GameObject m_LModuleLeftDown;
@@ -28,13 +27,13 @@ public class MoveRoot : MonoBehaviour
     public GameObject sprite;
 
     private Vector3 m_lastDirection;
+    private Vector3 m_Direction;
     private Vector3 rootDirection1, rootDirection2;
     public bool changeDirection = false;
     public AudioSource music, gameOver, rootSound;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
         movePoint.parent = null;   
         up = false;
         down = true;
@@ -44,11 +43,39 @@ public class MoveRoot : MonoBehaviour
         rootDirection2 = new Vector3(-1, 1, 1);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    private void Update(){
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
-        //if(transform.position == movePoint.position)
+
+        if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) && m_lastDirection != Vector3.down){
+            m_Direction = new Vector3(0, 1, 0);
+            m_lastDirection = Vector3.up;
+            up = true;
+        } else if ((Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && m_lastDirection != Vector3.up){
+            m_Direction = new Vector3(0, -1, 0);
+            m_lastDirection = Vector3.down;
+            down = true;
+        } else if ((Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) && m_lastDirection != Vector3.right){
+            m_Direction = new Vector3(-1, 0, 0);
+            m_lastDirection = Vector3.left;
+            left = true;
+        } else if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) && m_lastDirection != Vector3.left){
+            m_Direction = new Vector3(1, 0, 0);
+            m_lastDirection = Vector3.right;
+            right = true;
+        } else{
+            m_Direction = Vector3.zero;
+        }
+
+        if (Vector3.Distance(transform.position, movePoint.position) <= 0){
+            if (!Physics2D.OverlapCircle(movePoint.position + m_Direction, 0.2f, whatStopsMoviment)) {
+                movePoint.position += m_Direction;
+            }
+        }
+
+    }
+
+     void teste(){
+        transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
 
         if (Vector3.Distance(transform.position, movePoint.position) <= 0)
         {
@@ -118,8 +145,7 @@ public class MoveRoot : MonoBehaviour
         changeDirection = !changeDirection;
     }
 
-    public void createModuleVertical()
-    {
+    public void createModuleVertical(){
         if (up && left)
         {
             Instantiate(m_LModuleRightUp, transform.position, transform.rotation, roots.transform);
@@ -176,13 +202,11 @@ public class MoveRoot : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("danger"))
-        {
+        if (collision.gameObject.CompareTag("danger") || collision.gameObject.CompareTag("modulo")){
             music.Stop();
             StartCoroutine(playGameover());
         }
-        if (collision.gameObject.CompareTag("final"))
-        {
+        if (collision.gameObject.CompareTag("final")){
             SceneManager.LoadScene("End Game");
         }
     }
