@@ -1,14 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class ReturnMenu : MonoBehaviour
-{    void Update()
+{
+    private Button m_button;
+    
+    void OnEnable()
     {
-        if (Input.anyKey)
-        {
-            SceneManager.LoadScene("Menu");
-        }
+        m_button = this.GetComponent<Button>();
+        m_button.onClick.AddListener(ReturnToMenu);
+    }
+
+    void OnDisable()
+    {
+        m_button.onClick.RemoveAllListeners();
+    }
+
+    private void ReturnToMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }

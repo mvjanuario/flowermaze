@@ -213,6 +213,7 @@ public class MoveRoot : MonoBehaviour
 
     IEnumerator playGameover()
     {
+        gameOver.volume = 0.25f;
         gameOver.Play();
 
         while (gameOver.isPlaying)
