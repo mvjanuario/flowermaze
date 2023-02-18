@@ -1,223 +1,167 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 public class MoveRoot : MonoBehaviour
 {
-    public float moveSpeed = 5f;
+    public float moveSpeed = 2f;
     public Transform movePoint;
     public Transform rootSprite;
 
-    public LayerMask whatStopsMoviment;
+    public LayerMask whatStopsMovement;
 
-    public bool up, down, left, right;
+    private bool _up, _down, _left, _right;
 
-    [SerializeField] private GameObject m_LModuleLeftUp;
-    [SerializeField] private GameObject m_LModuleLeftDown;
-    [SerializeField] private GameObject m_LModuleRightUp;
-    [SerializeField] private GameObject m_LModuleRightDown;
-
-    [SerializeField] private GameObject m_moduleVertical;
-    [SerializeField] private GameObject m_moduleHorizontal;
+    public GameObject moduleLeftUp;
+    public GameObject moduleLeftDown;
+    public GameObject moduleRightUp;
+    public GameObject moduleRightDown;
+    public GameObject moduleVertical;
+    public GameObject moduleHorizontal;
 
     public GameObject roots;
     public GameObject sprite;
 
-    private Vector3 m_lastDirection;
-    private Vector3 m_Direction;
-    private Vector3 rootDirection1, rootDirection2;
-    public bool changeDirection = false;
+    private Vector3 _lastDirection;
+    private Vector3 _direction;
+    private Vector3 _rootDirection1, _rootDirection2;
+    private bool _changeDirection;
+    
     public AudioSource music, gameOver, rootSound;
 
     // Start is called before the first frame update
     void Start(){
         movePoint.parent = null;   
-        up = false;
-        down = true;
-        left = false;
-        right = false;
-        rootDirection1 = new Vector3(1, 1, 1);
-        rootDirection2 = new Vector3(-1, 1, 1);
+        _up = false;
+        _down = true;
+        _left = false;
+        _right = false;
+        _rootDirection1 = new Vector3(1, 1, 1);
+        _rootDirection2 = new Vector3(-1, 1, 1);
     }
 
     private void Update(){
         transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
 
-        if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) && m_lastDirection != Vector3.down){
-            m_Direction = new Vector3(0, 1, 0);
-            m_lastDirection = Vector3.up;
-            up = true;
-        } else if ((Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && m_lastDirection != Vector3.up){
-            m_Direction = new Vector3(0, -1, 0);
-            m_lastDirection = Vector3.down;
-            down = true;
-        } else if ((Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) && m_lastDirection != Vector3.right){
-            m_Direction = new Vector3(-1, 0, 0);
-            m_lastDirection = Vector3.left;
-            left = true;
-        } else if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) && m_lastDirection != Vector3.left){
-            m_Direction = new Vector3(1, 0, 0);
-            m_lastDirection = Vector3.right;
-            right = true;
-        } else{
-            m_Direction = Vector3.zero;
-        }
-
         if (Vector3.Distance(transform.position, movePoint.position) <= 0){
-            if (!Physics2D.OverlapCircle(movePoint.position + m_Direction, 0.2f, whatStopsMoviment)) {
-                movePoint.position += m_Direction;
-            }
-        }
-
-    }
-
-     void teste(){
-        transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
-
-        if (Vector3.Distance(transform.position, movePoint.position) <= 0)
-        {
-            if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && m_lastDirection != Vector3.down)
-            {
-                if (!Physics2D.OverlapCircle(movePoint.position + new Vector3(0, 1, 0), 0.2f, whatStopsMoviment))
-                {
-                    up = true;
-                    createModuleVertical();
-                    m_lastDirection = Vector3.up;
+            if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) && _lastDirection != Vector3.down){
+                if (!Physics2D.OverlapCircle(movePoint.position + new Vector3(0, 1, 0), 0.2f, whatStopsMovement)){
                     movePoint.position += new Vector3(0, 1, 0);
                     rootSprite.eulerAngles = new Vector3(0, 0, 180);
-                    ChangeDirection();
+                    _lastDirection = Vector3.up;
+                    _up = true;
+                    RootMoviment();
                 }
-            }
-            if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) && m_lastDirection != Vector3.up)
-            {
-                if (!Physics2D.OverlapCircle(movePoint.position + new Vector3(0, -1, 0), 0.2f, whatStopsMoviment))
-                {
-                    down = true;
-                    createModuleVertical();
-                    m_lastDirection = Vector3.down;
+            } else if ((Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && _lastDirection != Vector3.up){
+                if (!Physics2D.OverlapCircle(movePoint.position + new Vector3(0, -1, 0), 0.2f, whatStopsMovement)){
                     movePoint.position += new Vector3(0, -1, 0);
                     rootSprite.eulerAngles = new Vector3(0, 0, 0);
-                    ChangeDirection();
+                    _lastDirection = Vector3.down;
+                    _down = true;
+                    RootMoviment();
                 }
-            }
-            if ((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && m_lastDirection != Vector3.right)
-            {
-                if (!Physics2D.OverlapCircle(movePoint.position + new Vector3(-1, 0, 0), 0.2f, whatStopsMoviment))
-                {
-                    left = true;
-                    createModuleHorizontal();
-                    m_lastDirection = Vector3.left;
+            } else if ((Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) && _lastDirection != Vector3.right){
+                if (!Physics2D.OverlapCircle(movePoint.position + new Vector3(-1, 0, 0), 0.2f, whatStopsMovement)){
                     movePoint.position += new Vector3(-1, 0, 0);
                     rootSprite.eulerAngles = new Vector3(0, 0, -90);
-                    ChangeDirection();
+                    _lastDirection = Vector3.left;
+                    _left = true;
+                    RootMoviment();
                 }
-            }
-            if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && m_lastDirection != Vector3.left)
-            {
-                if(!Physics2D.OverlapCircle(movePoint.position + new Vector3(1, 0, 0), 0.2f, whatStopsMoviment))
-                {
-                    right = true;
-                    createModuleHorizontal();
-                    m_lastDirection = Vector3.right;
+            } else if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) && _lastDirection != Vector3.left){
+                if (!Physics2D.OverlapCircle(movePoint.position + new Vector3(1, 0, 0), 0.2f, whatStopsMovement)){
                     movePoint.position += new Vector3(1, 0, 0);
                     rootSprite.eulerAngles = new Vector3(0, 0, 90);
-                    ChangeDirection();
+                    _lastDirection = Vector3.right;
+                    _right = true;
+                    RootMoviment();
                 }
             }
         }
     }
 
-    private void ChangeDirection()
-    {
+    private void RootMoviment(){
+         CreateModule();
+         ChangeDirection();
+     }
+
+     private void ChangeDirection(){
         rootSound.Play();
-        if (changeDirection)
-        {
-            sprite.transform.localScale = rootDirection1;
-        }
-        else
-        {
-            sprite.transform.localScale = rootDirection2;
+        
+        if (_changeDirection){
+            sprite.transform.localScale = _rootDirection1;
+        } else {
+            sprite.transform.localScale = _rootDirection2;
         }
 
-        changeDirection = !changeDirection;
+        _changeDirection = !_changeDirection;
     }
 
-    public void createModuleVertical(){
-        if (up && left)
-        {
-            Instantiate(m_LModuleRightUp, transform.position, transform.rotation, roots.transform);
-            left = false;
-        }
-        else if (up && right)
-        {
-            Instantiate(m_LModuleLeftUp, transform.position, transform.rotation, roots.transform);
-            right = false;
-        }
-        else if (down && left)
-        {
-            Instantiate(m_LModuleRightDown, transform.position, transform.rotation, roots.transform);
-            left = false;
-        }
-        else if (down && right)
-        {
-            Instantiate(m_LModuleLeftDown, transform.position, transform.rotation, roots.transform);
-            right = false;
-        }
-        else
-        {
-            Instantiate(m_moduleVertical, transform.position, transform.rotation, roots.transform);
+    private void CreateModule(){
+        if (_lastDirection == Vector3.up || _lastDirection == Vector3.down){
+            CreateModuleVertical();
+        } else{
+            CreateModuleHorizontal();
         }
     }
 
-    public void createModuleHorizontal()
-    {
-        if (up && left)
-        {
-            Instantiate(m_LModuleLeftDown, transform.position, transform.rotation, roots.transform);
-            up = false;
+    private void CreateModuleVertical(){
+        if (_up && _left){
+            InstantiateModule(moduleRightUp);
+            _left = false;
+        } else if (_up && _right){
+            InstantiateModule(moduleLeftUp);
+            _right = false;
+        } else if (_down && _left){
+            InstantiateModule(moduleRightDown);
+            _left = false;
+        } else if (_down && _right){
+            InstantiateModule(moduleLeftDown);
+            _right = false;
+        } else{
+            InstantiateModule(moduleVertical);
         }
-        else if (up && right)
-        {
-            Instantiate(m_LModuleRightDown, transform.position, transform.rotation, roots.transform);
-            up = false;
+    }
+
+    private void CreateModuleHorizontal(){
+        if (_up && _left){
+            InstantiateModule(moduleLeftDown);
+            _up = false;
+        } else if (_up && _right){
+            InstantiateModule(moduleRightDown);
+            _up = false;
+        } else if (_down && _left){
+            InstantiateModule(moduleLeftUp);
+            _down = false;
+        } else if (_down && _right){
+            InstantiateModule(moduleRightUp);
+            _down = false;
+        } else{
+            Instantiate(moduleHorizontal, transform.position, moduleHorizontal.transform.rotation, roots.transform);
         }
-        else if (down && left)
-        {
-            Instantiate(m_LModuleLeftUp, transform.position, transform.rotation, roots.transform);
-            down = false;
-        }
-        else if (down && right)
-        {
-            Instantiate(m_LModuleRightUp, transform.position, transform.rotation, roots.transform);
-            down = false;
-        }
-        else
-        {
-            Instantiate(m_moduleHorizontal, transform.position, m_moduleHorizontal.transform.rotation, roots.transform);
-        }
+    }
+
+    private void InstantiateModule(GameObject module){
+        var transformAtual = transform;
+        Instantiate(module, transformAtual.position, transformAtual.rotation, roots.transform);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("danger") || collision.gameObject.CompareTag("modulo")){
             music.Stop();
-            StartCoroutine(playGameover());
+            StartCoroutine(PlayGameover());
         }
         if (collision.gameObject.CompareTag("final")){
             SceneManager.LoadScene("End Game");
         }
     }
 
-    IEnumerator playGameover()
-    {
+    private IEnumerator PlayGameover() {
         gameOver.volume = 0.25f;
         gameOver.Play();
 
-        while (gameOver.isPlaying)
-        {
+        while (gameOver.isPlaying){
             yield return null;
         }
 
