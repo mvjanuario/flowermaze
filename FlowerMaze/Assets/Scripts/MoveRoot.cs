@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -26,6 +27,9 @@ public class MoveRoot : MonoBehaviour
     private Vector3 _direction;
     private Vector3 _rootDirection1, _rootDirection2;
     private bool _changeDirection;
+
+    private List<GameObject> _modulesList;
+    private List<GameObject> _modulesListAntigo;
     
     public AudioSource music, gameOver, rootSound;
 
@@ -38,6 +42,9 @@ public class MoveRoot : MonoBehaviour
         _right = false;
         _rootDirection1 = new Vector3(1, 1, 1);
         _rootDirection2 = new Vector3(-1, 1, 1);
+
+        _modulesList = new List<GameObject>();
+        _modulesListAntigo = new List<GameObject>();
     }
 
     private void Update(){
@@ -81,7 +88,10 @@ public class MoveRoot : MonoBehaviour
     }
 
     private void RootMoviment(){
-         CreateModule();
+         _modulesList.Add(CreateModule());
+         if (_modulesList.Count >= 3){
+             _modulesList[^3].GetComponent<BoxCollider2D>().enabled = true;
+         }
          ChangeDirection();
      }
 
@@ -97,53 +107,61 @@ public class MoveRoot : MonoBehaviour
         _changeDirection = !_changeDirection;
     }
 
-    private void CreateModule(){
+    private GameObject CreateModule(){
         if (_lastDirection == Vector3.up || _lastDirection == Vector3.down){
-            CreateModuleVertical();
+            return CreateModuleVertical();
         } else{
-            CreateModuleHorizontal();
+            return CreateModuleHorizontal();
         }
     }
 
-    private void CreateModuleVertical(){
+    private GameObject CreateModuleVertical(){
+        GameObject module;
         if (_up && _left){
-            InstantiateModule(moduleRightUp);
+            module = InstantiateModule(moduleRightUp);
             _left = false;
         } else if (_up && _right){
-            InstantiateModule(moduleLeftUp);
+            module =InstantiateModule(moduleLeftUp);
             _right = false;
         } else if (_down && _left){
-            InstantiateModule(moduleRightDown);
+            module =InstantiateModule(moduleRightDown);
             _left = false;
         } else if (_down && _right){
-            InstantiateModule(moduleLeftDown);
+            module = InstantiateModule(moduleLeftDown);
             _right = false;
         } else{
-            InstantiateModule(moduleVertical);
+            module = InstantiateModule(moduleVertical);
         }
+
+        return module;
     }
 
-    private void CreateModuleHorizontal(){
+    private GameObject CreateModuleHorizontal(){
+        GameObject module;
         if (_up && _left){
-            InstantiateModule(moduleLeftDown);
+            module = InstantiateModule(moduleLeftDown);
             _up = false;
         } else if (_up && _right){
-            InstantiateModule(moduleRightDown);
+            module = InstantiateModule(moduleRightDown);
             _up = false;
         } else if (_down && _left){
-            InstantiateModule(moduleLeftUp);
+            module = InstantiateModule(moduleLeftUp);
             _down = false;
         } else if (_down && _right){
-            InstantiateModule(moduleRightUp);
+            module = InstantiateModule(moduleRightUp);
             _down = false;
         } else{
-            Instantiate(moduleHorizontal, transform.position, moduleHorizontal.transform.rotation, roots.transform);
+            module = Instantiate(moduleHorizontal, transform.position, moduleHorizontal.transform.rotation, roots.transform);
         }
+
+        return module;
     }
 
-    private void InstantiateModule(GameObject module){
+    private GameObject InstantiateModule(GameObject module){
         var transformAtual = transform;
-        Instantiate(module, transformAtual.position, transformAtual.rotation, roots.transform);
+        GameObject moduleAtual;
+        moduleAtual = Instantiate(module, transformAtual.position, transformAtual.rotation, roots.transform);
+        return moduleAtual;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
