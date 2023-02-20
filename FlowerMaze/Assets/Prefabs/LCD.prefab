@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2150166135956570140}
   - component: {fileID: 6596402589129246995}
   - component: {fileID: 4891565413368761507}
+  - component: {fileID: 2461836626564436505}
   m_Layer: 0
   m_Name: LCD
   m_TagString: modulo
@@ -110,7 +111,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9, y: 0.9}
   m_EdgeRadius: 0
 --- !u!50 &4891565413368761507
 Rigidbody2D:
@@ -133,3 +134,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &2461836626564436505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 705738181797747966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a6cca148c9b5154691443a644efc519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashMaterial: {fileID: 2100000, guid: d5b3cd8d1e8654b4295188c75b08cf43, type: 2}
+  duration: 0.2

@@ -167,25 +167,31 @@ MonoBehaviour:
   moveSpeed: 5
   movePoint: {fileID: 1675297836825180169}
   rootSprite: {fileID: 1675297836668835309}
-  whatStopsMoviment:
+  spriteRoot: {fileID: 0}
+  whatStopsMovement:
     serializedVersion: 2
-    m_Bits: 64
-  up: 0
-  down: 0
-  left: 0
-  right: 0
-  m_LModuleLeftUp: {fileID: 0}
-  m_LModuleLeftDown: {fileID: 0}
-  m_LModuleRightUp: {fileID: 0}
-  m_LModuleRightDown: {fileID: 0}
-  m_moduleVertical: {fileID: 2596881915309884099, guid: d092ab80ec6866445bbbaa534dffbbae, type: 3}
-  m_moduleHorizontal: {fileID: 453811656420489512, guid: 7e4293f2d3035f343916a7cf32d21d47, type: 3}
+    m_Bits: 0
+  moduleLeftUp: {fileID: 0}
+  moduleLeftDown: {fileID: 0}
+  moduleRightUp: {fileID: 0}
+  moduleRightDown: {fileID: 0}
+  moduleVertical: {fileID: 0}
+  moduleHorizontal: {fileID: 0}
+  raizMorta: {fileID: 0}
+  moduleLeftUpDead: {fileID: 0}
+  moduleLeftDownDead: {fileID: 0}
+  moduleRightUpDead: {fileID: 0}
+  moduleRightDownDead: {fileID: 0}
+  moduleDead: {fileID: 0}
   roots: {fileID: 0}
   sprite: {fileID: 0}
-  changeDirection: 0
+  _modulesList: []
+  _modulesListAntigo: []
   music: {fileID: 0}
   gameOver: {fileID: 0}
   rootSound: {fileID: 0}
+  isInGameOver: 0
+  tentativas: 0
 --- !u!50 &1675297836850871778
 Rigidbody2D:
   serializedVersion: 4
@@ -231,7 +237,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9, y: 0.9}
   m_EdgeRadius: 0
 --- !u!212 &1675297836850871779
 SpriteRenderer:

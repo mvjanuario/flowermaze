@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using BarthaSzabolcs.Tutorial_SpriteFlash;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,24 +11,25 @@ public class MoveRoot : MonoBehaviour
     public float moveSpeed = 2f;
     public Transform movePoint;
     public Transform rootSprite;
-    public BoxCollider2D collider;
+    public SpriteRenderer spriteRoot;
 
     public LayerMask whatStopsMovement;
 
     private bool _up, _down, _left, _right;
 
     public GameObject moduleLeftUp;
-    public GameObject moduleLeftUpDead;
     public GameObject moduleLeftDown;
-    public GameObject moduleLeftDownDead;
     public GameObject moduleRightUp;
-    public GameObject moduleRightUpDead;
     public GameObject moduleRightDown;
-    public GameObject moduleRightDownDead;
     public GameObject moduleVertical;
-    public GameObject moduleVerticalDead;
     public GameObject moduleHorizontal;
-    public GameObject moduleHorizontalDead;
+
+    public GameObject raizMorta;
+    public Sprite moduleLeftUpDead;
+    public Sprite moduleLeftDownDead;
+    public Sprite moduleRightUpDead;
+    public Sprite moduleRightDownDead;
+    public Sprite moduleDead;
 
     public GameObject roots;
     public GameObject sprite;
@@ -36,8 +39,8 @@ public class MoveRoot : MonoBehaviour
     private Vector3 _rootDirection1, _rootDirection2;
     private bool _changeDirection;
 
-    private List<GameObject> _modulesList;
-    private List<GameObject> _modulesListAntigo;
+    public List<GameObject> _modulesList;
+    public List<GameObject> _modulesListAntigo;
     private List<int> _directionsList;
     
     public AudioSource music, gameOver, rootSound;
@@ -58,7 +61,6 @@ public class MoveRoot : MonoBehaviour
         _modulesList = new List<GameObject>();
         _modulesListAntigo = new List<GameObject>();
         _directionsList = new List<int>();
-        collider = GetComponent<BoxCollider2D>();
     }
 
     private void Update(){
@@ -108,10 +110,10 @@ public class MoveRoot : MonoBehaviour
             _modulesList.Add(CreateModule());
         }
          
-         if (_modulesList.Count >= 10){
-             _modulesList[^10].GetComponent<BoxCollider2D>().enabled = true;
-         }
-         ChangeDirection();
+        if (_modulesList.Count >= 10){
+            _modulesList[^10].GetComponent<BoxCollider2D>().enabled = true;
+        }
+        ChangeDirection();
      }
 
      private void ChangeDirection(){
@@ -189,7 +191,7 @@ public class MoveRoot : MonoBehaviour
             if (!isInGameOver)
             {
                 music.Stop();
-                StartCoroutine(PlayGameover());
+                StartCoroutine(PlayGameOver());
             }
         }
         if (collision.gameObject.CompareTag("final")){
@@ -197,7 +199,74 @@ public class MoveRoot : MonoBehaviour
         }
     }
 
-    private IEnumerator PlayGameover() {
+    private IEnumerator PlayGameOver(){
+        gameOver.volume = 0.25f;
+        gameOver.Play();
+        isInGameOver = true;
+
+        _modulesListAntigo = new List<GameObject>(_modulesList);
+        _modulesList = new List<GameObject>();
+        spriteRoot.enabled = false;
+        
+        
+        Instantiate(raizMorta, movePoint.position , rootSprite.rotation, roots.transform);
+
+        foreach ( var modulo in _modulesListAntigo){
+            modulo.GetComponent<BoxCollider2D>().enabled = false;
+            SpriteRenderer spriteModulo = modulo.GetComponent<SpriteRenderer>();
+            
+            if(modulo.name.Contains("ModuleVertical") || modulo.name.Contains("ModuleHorizontal")){
+                spriteModulo.sprite = moduleDead;
+            } else if (modulo.name.Contains("LBD")){
+                spriteModulo.sprite = moduleRightDownDead;
+            } else if (modulo.name.Contains("LBE")){
+                spriteModulo.sprite = moduleLeftDownDead;
+            } else if (modulo.name.Contains("LCD")){
+                spriteModulo.sprite = moduleRightUpDead;
+            } else{
+                spriteModulo.sprite = moduleLeftUpDead;
+            }
+        }
+
+        foreach (var modulo in _modulesListAntigo){
+            SimpleFlash flash = modulo.GetComponent<SimpleFlash>();
+            flash.Flash();
+        }
+        
+        yield return new WaitForSeconds(0.4f);
+        
+        foreach (var modulo in _modulesListAntigo){
+            SimpleFlash flash = modulo.GetComponent<SimpleFlash>();
+            flash.Flash();
+        }
+
+        /*foreach (var modulo in _modulesListAntigo){
+            if (modulo.name.Contains("LBD") || modulo.name.Contains("LBE") || modulo.name.Contains("LCD") || modulo.name.Contains("LCE")){
+                yield return MoveToCamera(modulo);
+                Debug.Log("Tarde");
+            } 
+        }*/
+
+        while (gameOver.isPlaying){
+            yield return null;
+        }
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private IEnumerator MoveToCamera(GameObject modulo){
+        var speed = 5;
+        var position = transform.position;
+
+        while (transform.position != modulo.transform.localPosition){            
+            position = Vector3.MoveTowards(position, modulo.transform.localPosition, speed * Time.deltaTime);
+            transform.position = position;
+            Debug.Log("Teste");
+            yield return null;
+        }
+    }
+
+    /*private IEnumerator PlayGameoverAntigo() {
         tentativas++;
         isInGameOver = true;
         gameOver.volume = 0.25f;
@@ -328,5 +397,5 @@ public class MoveRoot : MonoBehaviour
 
         isInGameOver = false;
         music.Play();
-    }
+    }*/
 }
