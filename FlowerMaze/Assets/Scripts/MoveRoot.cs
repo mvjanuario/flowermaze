@@ -64,7 +64,8 @@ public class MoveRoot : MonoBehaviour
     }
 
     private void Update(){
-        transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
+        if(!isInGameOver)
+            transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
 
         if (Vector3.Distance(transform.position, movePoint.position) <= 0 && !isInGameOver){
             if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) && _lastDirection != Vector3.down){
@@ -204,16 +205,23 @@ public class MoveRoot : MonoBehaviour
         gameOver.Play();
         isInGameOver = true;
 
+        if (_modulesListAntigo.Count != 0){
+            foreach (var modulo in _modulesListAntigo){
+                Destroy(modulo);
+            }
+        }
+        
         _modulesListAntigo = new List<GameObject>(_modulesList);
         _modulesList = new List<GameObject>();
         spriteRoot.enabled = false;
-        
-        
-        Instantiate(raizMorta, movePoint.position , rootSprite.rotation, roots.transform);
+
+        var rootDead = Instantiate(raizMorta, movePoint.position , rootSprite.rotation, roots.transform);
 
         foreach ( var modulo in _modulesListAntigo){
             modulo.GetComponent<BoxCollider2D>().enabled = false;
             SpriteRenderer spriteModulo = modulo.GetComponent<SpriteRenderer>();
+
+            spriteModulo.sortingOrder = 3;
             
             if(modulo.name.Contains("ModuleVertical") || modulo.name.Contains("ModuleHorizontal")){
                 spriteModulo.sprite = moduleDead;
@@ -227,6 +235,8 @@ public class MoveRoot : MonoBehaviour
                 spriteModulo.sprite = moduleLeftUpDead;
             }
         }
+        
+        _modulesListAntigo.Add(rootDead);
 
         foreach (var modulo in _modulesListAntigo){
             SimpleFlash flash = modulo.GetComponent<SimpleFlash>();
@@ -239,29 +249,51 @@ public class MoveRoot : MonoBehaviour
             SimpleFlash flash = modulo.GetComponent<SimpleFlash>();
             flash.Flash();
         }
+        
+        _modulesListAntigo.Reverse();
 
-        /*foreach (var modulo in _modulesListAntigo){
+        foreach (var modulo in _modulesListAntigo){
             if (modulo.name.Contains("LBD") || modulo.name.Contains("LBE") || modulo.name.Contains("LCD") || modulo.name.Contains("LCE")){
                 yield return MoveToCamera(modulo);
                 Debug.Log("Tarde");
             } 
-        }*/
-
-        while (gameOver.isPlaying){
-            yield return null;
         }
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        yield return MoveToCamera(new Vector3(0.5f, -0.5f, 0));
+        
+        yield return new WaitForSeconds(2);
+        
+        _up = false;
+        _down = true;
+        _left = false;
+        _right = false;
+        _lastDirection = Vector3.zero;
+        
+        movePoint.position = new Vector3(0.5f, -0.5f, 0);
+        rootSprite.eulerAngles = Vector3.zero;
+        spriteRoot.enabled = true;
+        _changeDirection = false;
+        isInGameOver = false;
+        gameOver.Stop();
+        music.Play();
     }
 
     private IEnumerator MoveToCamera(GameObject modulo){
-        var speed = 5;
-        var position = transform.position;
+        var position = transform.localPosition;
 
-        while (transform.position != modulo.transform.localPosition){            
-            position = Vector3.MoveTowards(position, modulo.transform.localPosition, speed * Time.deltaTime);
-            transform.position = position;
-            Debug.Log("Teste");
+        while (position != modulo.transform.localPosition){            
+            position = Vector3.MoveTowards(position, modulo.transform.localPosition, (moveSpeed * 2) * Time.deltaTime);
+            transform.localPosition = position;
+            yield return null;
+        }
+    }
+    
+    private IEnumerator MoveToCamera(Vector3 posicaoInicial){
+        var position = transform.localPosition;
+
+        while (position != posicaoInicial){            
+            position = Vector3.MoveTowards(position, posicaoInicial, (moveSpeed * 2) * Time.deltaTime);
+            transform.localPosition = position;
             yield return null;
         }
     }
