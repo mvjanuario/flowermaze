@@ -220,6 +220,7 @@ public class MoveRoot : MonoBehaviour
         foreach ( var modulo in _modulesListAntigo){
             modulo.GetComponent<BoxCollider2D>().enabled = false;
             SpriteRenderer spriteModulo = modulo.GetComponent<SpriteRenderer>();
+            spriteModulo.color = new Color(spriteModulo.color.r, spriteModulo.color.g, spriteModulo.color.b, 0.58f);
 
             spriteModulo.sortingOrder = 3;
             
@@ -260,9 +261,7 @@ public class MoveRoot : MonoBehaviour
         }
 
         yield return MoveToCamera(new Vector3(0.5f, -0.5f, 0));
-        
-        yield return new WaitForSeconds(2);
-        
+
         _up = false;
         _down = true;
         _left = false;
@@ -270,8 +269,8 @@ public class MoveRoot : MonoBehaviour
         _lastDirection = Vector3.zero;
         
         movePoint.position = new Vector3(0.5f, -0.5f, 0);
-        rootSprite.eulerAngles = Vector3.zero;
         transform.rotation = Quaternion.identity;
+        rootSprite.eulerAngles = Vector3.zero;
         spriteRoot.enabled = true;
         _changeDirection = false;
         isInGameOver = false;
@@ -293,7 +292,7 @@ public class MoveRoot : MonoBehaviour
         var position = transform.localPosition;
 
         while (position != posicaoInicial){            
-            position = Vector3.MoveTowards(position, posicaoInicial, (moveSpeed * 2) * Time.deltaTime);
+            position = Vector3.MoveTowards(position, posicaoInicial, (moveSpeed * 8) * Time.deltaTime);
             transform.localPosition = position;
             yield return null;
         }
