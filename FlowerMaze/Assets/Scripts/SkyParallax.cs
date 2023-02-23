@@ -16,14 +16,14 @@ public class SkyParallax : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.x < 50)
+        if (transform.position.x < 36)
         {
             transform.position = new Vector3(currentPosition + parallaxEffect, transform.position.y, transform.position.z);
             currentPosition = transform.position.x;
         }
         else
         {
-            transform.position = new Vector3(-50, transform.position.y, transform.position.z);
+            transform.position = new Vector3(-36, transform.position.y, transform.position.z);
             currentPosition = transform.position.x;
         }
     }
