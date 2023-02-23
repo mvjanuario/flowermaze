@@ -271,6 +271,7 @@ public class MoveRoot : MonoBehaviour
         
         movePoint.position = new Vector3(0.5f, -0.5f, 0);
         rootSprite.eulerAngles = Vector3.zero;
+        transform.rotation = Quaternion.identity;
         spriteRoot.enabled = true;
         _changeDirection = false;
         isInGameOver = false;
